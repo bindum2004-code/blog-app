@@ -13,9 +13,9 @@ require("dotenv").config();
 const { supabaseAdmin } = require("../config/supabase");
 
 // ── PASTE YOUR USER UUIDS HERE ────────────────────────────────────────────────
-const ADMIN_ID  = "REPLACE_WITH_ADMIN_UUID";
-const EDITOR_ID = "REPLACE_WITH_EDITOR_UUID";
-const VIEWER_ID = "REPLACE_WITH_VIEWER_UUID";
+const ADMIN_ID  = "3ddc58a3-4974-40d8-8cd4-2d2e920722e9";
+const EDITOR_ID = "63a3cf22-009a-4086-8629-6c583e41c821";
+const VIEWER_ID = "70539b7d-653b-4fdd-a8e2-0f40139c987c";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const run = async () => {
