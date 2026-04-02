@@ -159,6 +159,10 @@ exports.getPostBySlug = catchAsync(async (req, res, next) => {
 
 // ── POST /api/posts ───────────────────────────────────────────────────────────
 exports.createPost = catchAsync(async (req, res) => {
+  if (!req.user || !req.user.id) {
+    throw new AppError("Not authenticated. Please sign in to create a post.", 401);
+  }
+
   const {
     title, excerpt = "", content, status = "draft", featured = false,
     featured_image = "default", read_time = 1, categories = [], tags = [],

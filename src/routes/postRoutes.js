@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const ctrl   = require("../controllers/postController");
 const cmtCtrl = require("../controllers/commentController");
-const { protect, optionalAuth, editorPlus, adminOnly } = require("../middleware/auth");
+const { protect, optionalAuth, adminOnly } = require("../middleware/auth");
 const { validatePost, validateComment } = require("../middleware/validate");
 const { commentLimiter } = require("../middleware/rateLimiter");
 
@@ -10,7 +10,7 @@ router.get  ("/",                      optionalAuth, ctrl.getPosts);
 router.get  ("/:slug",                 optionalAuth, ctrl.getPostBySlug);
 
 // Authenticated
-router.post ("/",                      protect, editorPlus, validatePost, ctrl.createPost);
+router.post ("/",                      protect, validatePost,             ctrl.createPost);
 router.patch("/:id",                   protect, validatePost,             ctrl.updatePost);
 router.delete("/:id",                  protect,                           ctrl.deletePost);
 router.post ("/:id/like",              protect,                           ctrl.toggleLike);

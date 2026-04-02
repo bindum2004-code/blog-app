@@ -4,14 +4,18 @@ const AppError = require("../utils/AppError");
 // ── Extract and verify Supabase JWT ──────────────────────────────────────────
 exports.protect = async (req, res, next) => {
   try {
-    const header = req.headers.authorization;
-    if (!header?.startsWith("Bearer ")) return next(new AppError("Not authenticated.", 401));
+    const header = req.headers.authorization || req.headers.Authorization || req.get("authorization");
+    if (!header?.toString().startsWith("Bearer ")) {
+      return next(new AppError("Not authenticated. Please sign in and try again.", 401));
+    }
 
-    const token = header.split(" ")[1];
+    const token = header.toString().split(" ")[1];
 
     // Verify token with Supabase (uses the service key to validate)
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-    if (error || !user) return next(new AppError("Invalid or expired token.", 401));
+    if (error || !user) {
+      return next(new AppError("Invalid or expired token. Please sign in again.", 401));
+    }
 
     // Fetch profile (role etc.)
     const { data: profile, error: pErr } = await supabaseAdmin
@@ -24,7 +28,13 @@ exports.protect = async (req, res, next) => {
     if (profile.account_status === "suspended")
       return next(new AppError("Your account has been suspended.", 403));
 
-    req.user        = { ...user, ...profile };
+    const normalizedRole = profile.role || "viewer";
+    req.user = {
+      ...user,
+      ...profile,
+      role:           normalizedRole,
+      account_status: profile.account_status || "active",
+    };
     req.accessToken = token;               // forwarded to supabaseAs() calls
     next();
   } catch (err) {
@@ -35,10 +45,10 @@ exports.protect = async (req, res, next) => {
 // ── Optional auth (attaches user if token present, does not fail) ─────────────
 exports.optionalAuth = async (req, res, next) => {
   try {
-    const header = req.headers.authorization;
-    if (!header?.startsWith("Bearer ")) return next();
+    const header = req.headers.authorization || req.headers.Authorization || req.get("authorization");
+    if (!header?.toString().startsWith("Bearer ")) return next();
 
-    const token = header.split(" ")[1];
+    const token = header.toString().split(" ")[1];
     const { data: { user } } = await supabaseAdmin.auth.getUser(token);
     if (!user) return next();
 
@@ -46,7 +56,13 @@ exports.optionalAuth = async (req, res, next) => {
       .from("profiles").select("*").eq("id", user.id).single();
 
     if (profile) {
-      req.user        = { ...user, ...profile };
+      const normalizedRole = profile.role || "viewer";
+      req.user = {
+        ...user,
+        ...profile,
+        role:           normalizedRole,
+        account_status: profile.account_status || "active",
+      };
       req.accessToken = token;
     }
   } catch {}

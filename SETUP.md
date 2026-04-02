@@ -84,7 +84,7 @@ UPDATE profiles SET
   verified = true
 WHERE id = 'PASTE_EDITOR_UUID_HERE';
 
--- Viewer
+-- Author
 UPDATE profiles SET
   username = 'sam',
   first_name = 'Sam',

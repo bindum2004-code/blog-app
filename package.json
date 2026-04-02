@@ -1,7 +1,7 @@
 {
   "name": "inkwell-backend",
   "version": "1.0.0",
-  "description": "Inkwell blog platform \u2014 Supabase + Express backend",
+  "description": "Inkwell blog platform \u2026 Supabase + Express backend",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
